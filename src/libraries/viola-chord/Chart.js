@@ -5,6 +5,7 @@ class Chart {
         this.height = height;
         this.strings = stringsQty;
         this.frets = fretsQty;
+        this.startFret = 1;
         this.cursor = createVector(0,0);
         this.cursorVisible = true;
         this.chord = [];
@@ -14,12 +15,24 @@ class Chart {
     draw() {
         push();
         translate(this.position.x,this.position.y);
+        if (this.startFret > 1) {
+            this.drawStartFret();
+        }
         this.drawLines();
         if (this.cursorVisible) {
            this.drawCursor();   
         }
         this.drawChord();     
         pop();
+    }
+
+    drawStartFret() {
+        push();
+        textSize(30);
+        textAlign(CENTER);
+        text(this.startFret,-this.stringX(0.75),this.fretY(1.5)*1.1);
+        pop();
+
     }
 
     drawLines() {
@@ -49,7 +62,7 @@ class Chart {
             noStroke();
             fill(Chart.CURSOR_COLOR);
         }
-        ellipse(this.stringX(this.cursor.x), this.fretY(this.cursor.y) + this.fretY(1)/2 - this.fretY(1), this.fretY(1)/2,this.fretY(1)/2);
+        ellipse(this.stringX(this.cursor.x), this.fretY(this.cursor.y) + this.fretY(1)/2 - this.fretY(1), this.fretY(1)/1.5,this.fretY(1)/1.5);
         pop();
     }
 
@@ -66,7 +79,7 @@ class Chart {
                 noStroke();
                 fill(0);
             }
-            ellipse(this.stringX(note.x), this.fretY(note.y) + this.fretY(1)/2 - this.fretY(1), this.fretY(1)/2.5,this.fretY(1)/2.5);
+            ellipse(this.stringX(note.x), this.fretY(note.y) + this.fretY(1)/2 - this.fretY(1), this.fretY(1)/2,this.fretY(1)/2);
         }
         pop();
     }

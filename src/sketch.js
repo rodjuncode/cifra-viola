@@ -47,3 +47,10 @@ function keyPressed() {
   }
 
 }
+
+function keyTyped() {
+  //if (isNaN(key)) return;
+  if (![1,2,3,4,5,6,7,8,9].includes(int(key))) return;
+  
+  chart.startFret = key;
+}
