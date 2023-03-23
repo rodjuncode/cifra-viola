@@ -15,10 +15,15 @@ function setup() {
 
   let chartWidth = 200;
   let chartHeight = 300;
-  let chartX = scaler.width()/2 - chartWidth/2;
-  let chartY = scaler.height()/2 - chartHeight/2;
-  chart = new Chart(createVector(chartX,chartY),chartWidth,chartHeight,Chart.STRINGS,Chart.FRETS);
-
+  let chartX = scaler.width() / 2 - chartWidth / 2;
+  let chartY = scaler.height() / 2 - chartHeight / 2;
+  chart = new Chart(
+    createVector(chartX, chartY),
+    chartWidth,
+    chartHeight,
+    Chart.STRINGS,
+    Chart.FRETS
+  );
 }
 
 function draw() {
@@ -30,27 +35,48 @@ function draw() {
   // T.checkReady(0);
 }
 
-
 function keyPressed() {
   if (keyCode === LEFT_ARROW) {
-    chart.cursorLeft();
+    if (chart.tool == Chart.NOTE) {
+      chart.cursorLeft();
+    } else if (chart.tool == Chart.CAPO) {
+      chart.capoGrow();
+    }
   } else if (keyCode === RIGHT_ARROW) {
-    chart.cursorRight();
+    if (chart.tool == Chart.NOTE) {
+      chart.cursorRight();
+    } else if (chart.tool == Chart.CAPO) {
+      chart.capoShrink();
+    }
   } else if (keyCode === UP_ARROW) {
-    chart.cursorUp();
+    if (chart.tool == Chart.NOTE) {
+      chart.cursorUp();
+    } else if (chart.tool == Chart.CAPO) {
+      chart.capoUp();
+    }
   } else if (keyCode === DOWN_ARROW) {
-    chart.cursorDown();
+    if (chart.tool == Chart.NOTE) {
+      chart.cursorDown();
+    } else if (chart.tool == Chart.CAPO) {
+      chart.capoDown();
+    }
   } else if (keyCode === ENTER) {
-    chart.click();
-  } else if (keyCode === CONTROL) {
-    chart.toggleCursor();
+    if (chart.tool == Chart.NOTE) {
+      chart.setNote();
+    } else if (chart.tool == Chart.CAPO) {
+      chart.setCapo();
+    }
+  } else if (keyCode === SHIFT) {
+    if (chart.tool == Chart.NOTE) {
+      chart.toggleCursor();
+    } else if (chart.tool == Chart.CAPO) {
+    }
+  } else if (keyCode === BACKSPACE) {
+    chart.toggleTool();
   }
-
 }
 
 function keyTyped() {
-  //if (isNaN(key)) return;
-  if (![1,2,3,4,5,6,7,8,9].includes(int(key))) return;
-  
+  if (![1, 2, 3, 4, 5, 6, 7, 8, 9].includes(int(key))) return;
   chart.startFret = key;
 }
