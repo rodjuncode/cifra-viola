@@ -1,4 +1,12 @@
-# Your project name here 
->:japanese_ogre: *Omg! I can't wait to see what you are going to create!*
+# Cifra Viola
+A javascript application written with p5.js to generate chord diagrams for the brazilian 10 string guitar (viola).
 
->:japanese_goblin: *"Please don't forget to write a nice description here. Documentation matters!"*
+## Roadmap
+- [X] ~~Add capability of adding title to the diagram~~
+- [X] ~~Add capability of changing the number of frets in the diagram~~
+- [ ] Add support to show labels on the fretboard (notes, intervals, figers)
+- [ ] Add support for other tunings (currently only *Cebolão em Ré* is supported)
+- [ ] Add support for barre chord notation
+- [ ] Add click support
+- [ ] Add muted strings notation
+
