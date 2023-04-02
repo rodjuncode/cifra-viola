@@ -6,6 +6,14 @@ class Chart {
     this.strings = stringsQty;
     this.frets = fretsQty;
     this.startFret = 1;
+    this.barre = {
+      on: false,
+      cursor: 1,
+      cursorLength: this.strings,
+      position: 0,
+      length: this.strings,
+    };
+    this.cursorMode = Chart.NOTE_CURSOR;
     this.cursor = createVector(0, 0);
     this.cursorVisible = true;
     this.chord = [];
@@ -21,7 +29,11 @@ class Chart {
     translate(this.position.x, this.position.y);
     translate(0, this.fretY(0.25));
     this.drawTitle();
-    translate(0, this.fretY(0.15) + map(this.frets,Chart.MIN_FRETS,Chart.MAX_FRETS,this.fretY(0.35),0));
+    translate(
+      0,
+      this.fretY(0.15) +
+        map(this.frets, Chart.MIN_FRETS, Chart.MAX_FRETS, this.fretY(0.35), 0)
+    );
     if (this.startFret > 1) {
       this.drawStartFret();
     }
@@ -30,12 +42,30 @@ class Chart {
       this.drawCursor();
     }
     this.drawChord();
+    this.drawBarre();
     pop();
+  }
+
+  drawBarre() {
+    if (this.barre.position > 0) {
+      push();
+      translate(0, this.fretY(1));
+      strokeCap(PROJECT);
+      strokeWeight(10);
+      stroke(0);
+      line(
+        this.stringX(this.strings - this.barre.length),
+        this.fretY(this.barre.position) - this.fretY(0.5),
+        this.stringX(this.strings - 1),
+        this.fretY(this.barre.position) - this.fretY(0.5)
+      );
+      pop();
+    }
   }
 
   drawTitle() {
     push();
-    textSize(map(this.frets,Chart.MIN_FRETS,Chart.MAX_FRETS,75,65));
+    textSize(map(this.frets, Chart.MIN_FRETS, Chart.MAX_FRETS, 75, 65));
     textAlign(CENTER);
     text(this.title, this.width / 2, 0);
     pop();
@@ -65,15 +95,59 @@ class Chart {
   }
 
   drawCursor() {
+    if (this.barre.on) {
+      this.drawBarreCursor();
+    } else {
+      this.drawNoteCursor();
+    }
+  }
+
+  toggleCursorMode() {
+    if (this.cursorMode == Chart.NOTE_CURSOR) {
+      this.cursorMode = Chart.BARRE_CURSOR;
+      this.barre.on = true;
+      this.resetBarreCursor();
+    } else {
+      this.cursorMode = Chart.NOTE_CURSOR;
+      this.barre.on = false;
+    }
+  }
+
+  resetBarreCursor() {
+    if (this.barre.position > 0) {
+      this.barre.cursor = this.barre.position;
+      this.barre.cursorLength = this.barre.length;
+      return;
+    }
+    this.barre.cursor = 1;
+    this.barre.cursorLength = this.strings;
+  }
+
+  drawBarreCursor() {
+    push();
+    translate(0, this.fretY(1));
+    strokeCap(PROJECT);
+    strokeWeight(20);
+    stroke(Chart.INTERFACE_COLOR);
+    line(
+      this.stringX(this.strings - this.barre.cursorLength),
+      this.fretY(this.barre.cursor) - this.fretY(0.5),
+      this.stringX(this.strings - 1),
+      this.fretY(this.barre.cursor) - this.fretY(0.5)
+    );
+    pop();
+  }
+
+  drawNoteCursor() {
     push();
     translate(0, this.fretY(1));
     if (this.cursor.y == 0) {
       noFill();
       strokeWeight(5);
-      stroke(Chart.CURSOR_COLOR);
+      stroke(Chart.INTERFACE_COLOR);
     } else {
       noStroke();
-      fill(Chart.CURSOR_COLOR);
+      fill(Chart.INTERFACE_COLOR);
     }
     ellipse(
       this.stringX(this.cursor.x),
@@ -117,46 +191,104 @@ class Chart {
 
   cursorUp() {
     if (!this.cursorVisible) return;
-    if (this.cursor.y == 0) {
-      this.cursor.y = this.frets;
+    if (this.barre.on) {
+      if (this.barre.cursor == 1) {
+        this.barre.cursor = this.frets;
+      } else {
+        this.barre.cursor--;
+      }
     } else {
-      this.cursor.y--;
+      if (this.cursor.y == 0) {
+        this.cursor.y = this.frets;
+      } else {
+        this.cursor.y--;
+      }
     }
   }
 
   cursorDown() {
     if (!this.cursorVisible) return;
-    if (this.cursor.y == this.frets) {
-      this.cursor.y = 0;
+    if (this.barre.on) {
+      if (this.barre.cursor == this.frets) {
+        this.barre.cursor = 1;
+      } else {
+        this.barre.cursor++;
+      }
     } else {
-      this.cursor.y++;
+      if (this.cursor.y == this.frets) {
+        this.cursor.y = 0;
+      } else {
+        this.cursor.y++;
+      }
     }
   }
 
   cursorLeft() {
     if (!this.cursorVisible) return;
-    if (this.cursor.x == 0) {
-      this.cursor.x = this.strings - 1;
+    if (this.barre.on) {
+      if (this.barre.cursorLength == this.strings) {
+        this.barre.cursorLength = 2;
+      } else {
+        this.barre.cursorLength++;
+      }
     } else {
-      this.cursor.x--;
+      if (this.cursor.x == 0) {
+        this.cursor.x = this.strings - 1;
+      } else {
+        this.cursor.x--;
+      }
     }
   }
 
   cursorRight() {
     if (!this.cursorVisible) return;
-    if (this.cursor.x == this.strings - 1) {
-      this.cursor.x = 0;
+    if (this.barre.on) {
+      if (this.barre.cursorLength == 2) {
+        this.barre.cursorLength = this.strings;
+      } else {
+        this.barre.cursorLength--;
+      }
     } else {
-      this.cursor.x++;
+      if (this.cursor.x == this.strings - 1) {
+        this.cursor.x = 0;
+      } else {
+        this.cursor.x++;
+      }
     }
   }
 
   click() {
-    if (this.cursorVisible) {
+    if (!this.cursorVisible) return;
+    if (this.barre.on) {
+      if (this.barre.cursor == this.barre.position && this.barre.cursorLength == this.barre.length) {
+        this.removeBarre();
+        return;
+      }
+      this.insertBarre();
+    } else {
       if (this.hasNoteAtCursor() >= 0) {
         this.removeNote();
       } else {
         this.insertNote();
+      }
+    }
+  }
+
+  insertBarre() {
+    this.barre.position = this.barre.cursor;
+    this.barre.length = this.barre.cursorLength;
+    this.cleanAfterBarre();
+  }
+
+  removeBarre() {
+    this.resetBarre();
+  }
+
+  cleanAfterBarre() {
+    for (let i = 0; i < this.chord.length; i++) {
+      if (this.chord[i].x >= this.strings - this.barre.length) {
+        this.chord.splice(i, 1);
+        i--;
       }
     }
   }
@@ -188,6 +320,24 @@ class Chart {
       }
     }
     this.chord.push(createVector(this.cursor.x, this.cursor.y));
+    this.cleanBarreBeforeNote();
+  }
+
+  cleanBarreBeforeNote() {
+    for (let i = 0; i < this.chord.length; i++) {
+      if (
+        this.chord[i].y <= this.barre.position &&
+        this.chord[i].x >= this.strings - this.barre.length
+      ) {
+        this.resetBarre();
+        break;
+      }
+    }
+  }
+
+  resetBarre() {
+    this.barre.position = 0;
+    this.barre.length = this.strings;
   }
 
   toggleCursor() {
@@ -220,21 +370,23 @@ class Chart {
 
   clean() {
     for (let i = this.chord.length - 1; i >= 0; i--) {
-      if (this.chord[i].y >= this.frets - 1) {
+      if (this.chord[i].y > this.frets) {
         this.chord.splice(i, 1);
       }
     }
-    if (this.cursor.y >= this.frets - 1) {
+    if (this.cursor.y > this.frets) {
       this.cursor.y = this.frets;
     }
   }
 
+  static NOTE_CURSOR = 'note';
+  static BARRE_CURSOR = 'barre';
   static FRETS_WIDTH = 35;
   static FRETS_HEIGHT = 70;
   static MAX_FRETS = 7;
   static MIN_FRETS = 4;
   static STRINGS = 5;
-  static CURSOR_COLOR = '#ffa500';
+  static INTERFACE_COLOR = '#ffa500';
   static CHROMATIC_SCALE = [
     'C',
     'C#',

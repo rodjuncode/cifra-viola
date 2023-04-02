@@ -61,7 +61,10 @@ function keyPressed() {
   } else if (keyCode === ENTER) {
     chart.click();
   } else if (key === 's') {
-    saveCanvas(chart.title, 'png');
+    // saveCanvas(chart.title, 'png');
+    chart.toggleCursor();
+  } else if (key === 'b') {
+    chart.toggleCursorMode();
   } else if (keyCode === 187 && keyIsDown(SHIFT)) {
     chart.fretsQtyUp();
   } else if (keyCode === 189 && keyIsDown(SHIFT)) {
@@ -72,7 +75,6 @@ function keyPressed() {
   }
 }
 
-// function that checks if keyCode is a letter, number, space, parenthesis, slash, sharp
 function isPrintable(keyCode) {
   return (
     (keyCode >= 48 && keyCode <= 57) ||
