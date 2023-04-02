@@ -1,7 +1,6 @@
 let T, R;
 
 let chart;
-
 let writingChordName = false;
 
 function setup() {
@@ -62,7 +61,7 @@ function keyPressed() {
   } else if (keyCode === ENTER) {
     chart.click();
   } else if (key === 's') {
-    chart.toggleCursor();
+    saveCanvas(chart.title, 'png');
   } else if (keyCode === 187 && keyIsDown(SHIFT)) {
     chart.fretsQtyUp();
   } else if (keyCode === 189 && keyIsDown(SHIFT)) {
@@ -87,4 +86,3 @@ function isPrintable(keyCode) {
     keyCode === 191
   );
 }
-

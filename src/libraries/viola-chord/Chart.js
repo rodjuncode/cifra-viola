@@ -8,14 +8,11 @@ class Chart {
     this.startFret = 1;
     this.cursor = createVector(0, 0);
     this.cursorVisible = true;
-    this.chord = [
-      createVector(0, 0),
-      createVector(1, 0),
-      createVector(2, 0),
-      createVector(3, 0),
-      createVector(4, 0),
-    ];
-    this.title = 'E';
+    this.chord = [];
+    for (let i = 0; i < this.strings; i++) {
+      this.chord.push(createVector(i, 0));
+    }
+    this.title = 'D';
     this.tunning = ['D', 'A', 'F#', 'D', 'A'];
   }
 
